@@ -1,5 +1,5 @@
 <template>
-  <header class="page-header">
+  <header class="page-header" v-if="false">
     <div class="header-content container-1080">
       <div class="header-hd">
         <router-link :to="{ name: 'Home' }">

@@ -20,7 +20,7 @@ export default {
 <style type="text/css" lang="less" scoped>
 .page-basic-layout {
   min-height: 100vh;
-  min-width: 1080px;
+  // min-width: 1080px;
   display: flex;
   flex-direction: column;
 }
