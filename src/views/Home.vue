@@ -1,148 +1,84 @@
 <template>
-  <div class="home-page" v-loading="loading">
-    <div class="image-section">
-      <div class="image-list">
-        <div class="image-item" v-for="item in images" :key="item.name">
-          <el-image
-            class="image-item-elimg"
-            :src="item.url"
-            :preview-src-list="[item.url]"
-            fit="cover"
-          ></el-image>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="page-home" ref="container"></div>
 </template>
 
 <script>
+// import * as THREE from 'three';
+// import dat from 'dat.gui';
+
 export default {
-  name: "Home",
-  data() {
-    return {
-      loading: false,
-      images: [
-        {
-          name: "Jeo1",
-          url: require("@/assets/images/page-404_1.png")
-        },
-        {
-          name: "Jeo2",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo3",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo4",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo5",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo6",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo7",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo8",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo9",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo10",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo11",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo12",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo13",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo14",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo15",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo16",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo17",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo18",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        },
-        {
-          name: "Jeo19",
-          url:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-        }
-      ],
-      srcList: [
-        "https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg",
-        "https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg"
-      ]
-    };
+  data: () => ({
+    scene: null,
+    camera: null,
+    render: null,
+    controls: {
+      rotationSpeed: 0.02
+    }
+  }),
+  created() {
+    this.$nextTick(() => {
+      this.init();
+    });
   },
-  created() {}
+  methods: {
+    init() {
+      const containerOffsetWidth = this.$refs.container.offsetWidth;
+      const containerOffsetHeight = this.$refs.container.offsetHeight;
+      // eslint-disable-next-line
+      this.scene = new THREE.Scene();
+      // eslint-disable-next-line
+      this.camera = new THREE.PerspectiveCamera(70, containerOffsetWidth / containerOffsetHeight, 0.1, 5000);
+      // this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 5000);
+      console.log(containerOffsetWidth);
+      console.log(containerOffsetHeight);
+
+      this.camera.position.x = 0;
+      this.camera.position.y = 0;
+      this.camera.position.z = 1500;
+      this.camera.lookAt(this.scene.position);
+      // eslint-disable-next-line
+      let geometry = new THREE.Geometry();
+      console.log(geometry);
+
+      function getGridOn2D(step, iLayer) {
+        // eslint-disable-next-line
+        let geometry = new THREE.Geometry();
+        for (let i = -8000; i <= 8000; i += step) {
+          // eslint-disable-next-line
+          geometry.vertices.push( new THREE.Vector3( -8000, i, iLayer ), new THREE.Vector3( 8000, i, iLayer ));
+          // eslint-disable-next-line
+          geometry.vertices.push( new THREE.Vector3( i, -8000, iLayer ), new THREE.Vector3( i, 8000, iLayer ));
+        }
+        // eslint-disable-next-line
+        return new THREE.LineSegments(geometry,
+          // eslint-disable-next-line
+          new THREE.LineBasicMaterial( { color: 0xD0D0D0, opacity: 1 } ) );
+      }
+      const GridStep100 = getGridOn2D(100, -2);
+      const GridStep500 = getGridOn2D(500, -1);
+      this.scene.add(GridStep100);
+      this.scene.add(GridStep500);
+
+      // eslint-disable-next-line
+      this.renderer = new THREE.WebGLRenderer();
+      // eslint-disable-next-line
+      this.renderer.setClearColor(new THREE.Color(0xEEEEEE));
+      this.renderer.setSize(containerOffsetWidth, containerOffsetHeight);
+
+      this.$refs.container.append(this.renderer.domElement);
+      this.renderScene();
+    },
+    renderScene() {
+      let { scene, camera, renderer } = this;
+      requestAnimationFrame(this.renderScene);
+      renderer.render(scene, camera);
+    }
+  }
 };
 </script>
 
-<style type="text/css" lang="less" scoped>
-.home-page {
-  padding: 5px;
-  background-color: #333;
-}
-.image-list {
-  .image-item {
-    display: inline-block;
-    width: 12%;
-    height: 180px;
-    margin: 5px;
-
-    .image-item-elimg {
-      width: 100%;
-      height: 100%;
-    }
-  }
+<style type="text/css" lang="less">
+.page-home {
+  height: 100%;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <footer class="page-footer" v-if="false">
+  <footer class="page-footer">
     <div class="container-1080">
       Copyright © 2020 home-plan.cn All Rights Reserved 沪ICP备2020026846号
       沪公网安备 31010102006648号 联系邮箱：kf@home-plan.cn
