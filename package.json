@@ -13,10 +13,11 @@
     "core-js": "^3.6.4",
     "dat.gui": "^0.7.7",
     "element-ui": "^2.13.1",
+    "lodash": "^4.17.20",
     "moment": "^2.26.0",
     "nprogress": "^0.2.0",
     "qiniu-js": "^2.5.5",
-    "three": "^0.125.2",
+    "resize-detector": "^0.2.2",
     "vue": "^2.6.11",
     "vue-router": "^3.1.6",
     "vuex": "^3.1.3"

@@ -3,8 +3,9 @@
 </template>
 
 <script>
-// import * as THREE from 'three';
-// import dat from 'dat.gui';
+import * as THREE from "three";
+import debounce from "lodash/debounce";
+import { addListener, removeListener } from "resize-detector";
 
 export default {
   data: () => ({
@@ -13,58 +14,117 @@ export default {
     render: null,
     controls: {
       rotationSpeed: 0.02
+    },
+    movePlan: {
+      isLock: true,
+      x: 0,
+      y: 0
     }
   }),
   created() {
-    this.$nextTick(() => {
-      this.init();
-    });
+    this.resize = debounce(this.resize, 100);
+    this.mousewheel = debounce(this.mousewheel, 10);
+  },
+  mounted() {
+    this.init();
+    addListener(this.$refs.container, this.resize);
+    this.$refs.container.addEventListener("wheel", this.mousewheel);
+    this.$refs.container.addEventListener("mousedown", this.mouseDown, false);
+    this.$refs.container.addEventListener("mousemove", this.mouseMove, false);
+    this.$refs.container.addEventListener("mouseup", this.mouseUp, false);
+    this.$refs.container.addEventListener("mouseout", this.mouseUp, false);
+  },
+  beforeDestroy() {
+    removeListener(this.$refs.container, this.resize);
   },
   methods: {
+    resize() {
+      if (this.renderer) {
+        const containerOffsetWidth = this.$refs.container.offsetWidth;
+        const containerOffsetHeight = this.$refs.container.offsetHeight;
+        this.camera.aspect = containerOffsetWidth / containerOffsetHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(containerOffsetWidth, containerOffsetHeight);
+      }
+    },
+    mousewheel(e) {
+      const { camera } = this;
+      e.preventDefault();
+      if (e.wheelDelta > 0) {
+        camera.position.z -= 80;
+        if (camera.position.z < 0) camera.position.z = 1;
+      }
+      if (e.wheelDelta < 0) {
+        camera.position.z += 80;
+        if (camera.position.z > 6000) camera.position.z = 6000;
+      }
+      camera.updateProjectionMatrix();
+    },
+    mouseDown(e) {
+      this.$refs.container.style.cursor = "pointer";
+      this.movePlan.isLock = false;
+      this.movePlan.x = e.clientX;
+      this.movePlan.y = e.clientY;
+    },
+    mouseMove(e) {
+      const { camera, movePlan } = this;
+      if (!movePlan.isLock) {
+        const moveX = movePlan.x - e.clientX;
+        const moveY = movePlan.y - e.clientY;
+        const size = Math.ceil(Math.abs(camera.position.z / 1000));
+        camera.position.x += moveX * size;
+        camera.position.y += -moveY * size;
+        movePlan.x = e.clientX;
+        movePlan.y = e.clientY;
+      }
+    },
+    mouseUp() {
+      this.$refs.container.style.cursor = "default";
+      this.movePlan.isLock = true;
+    },
     init() {
       const containerOffsetWidth = this.$refs.container.offsetWidth;
       const containerOffsetHeight = this.$refs.container.offsetHeight;
-      // eslint-disable-next-line
       this.scene = new THREE.Scene();
-      // eslint-disable-next-line
-      this.camera = new THREE.PerspectiveCamera(70, containerOffsetWidth / containerOffsetHeight, 0.1, 5000);
-      // this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 5000);
-      console.log(containerOffsetWidth);
-      console.log(containerOffsetHeight);
+
+      this.camera = new THREE.PerspectiveCamera(
+        70,
+        containerOffsetWidth / containerOffsetHeight,
+        0.1,
+        9000
+      );
 
       this.camera.position.x = 0;
       this.camera.position.y = 0;
       this.camera.position.z = 1500;
       this.camera.lookAt(this.scene.position);
-      // eslint-disable-next-line
-      let geometry = new THREE.Geometry();
-      console.log(geometry);
 
       function getGridOn2D(step, iLayer) {
-        // eslint-disable-next-line
         let geometry = new THREE.Geometry();
-        for (let i = -8000; i <= 8000; i += step) {
-          // eslint-disable-next-line
-          geometry.vertices.push( new THREE.Vector3( -8000, i, iLayer ), new THREE.Vector3( 8000, i, iLayer ));
-          // eslint-disable-next-line
-          geometry.vertices.push( new THREE.Vector3( i, -8000, iLayer ), new THREE.Vector3( i, 8000, iLayer ));
+        for (let i = -4000; i <= 4000; i += step) {
+          geometry.vertices.push(
+            new THREE.Vector3(-4000, i, iLayer),
+            new THREE.Vector3(4000, i, iLayer)
+          );
+          geometry.vertices.push(
+            new THREE.Vector3(i, -4000, iLayer),
+            new THREE.Vector3(i, 4000, iLayer)
+          );
         }
-        // eslint-disable-next-line
-        return new THREE.LineSegments(geometry,
-          // eslint-disable-next-line
-          new THREE.LineBasicMaterial( { color: 0xD0D0D0, opacity: 1 } ) );
+        return new THREE.LineSegments(
+          geometry,
+          new THREE.LineBasicMaterial({ color: 0xd0d0d0, opacity: 1 })
+        );
       }
+
       const GridStep100 = getGridOn2D(100, -2);
       const GridStep500 = getGridOn2D(500, -1);
       this.scene.add(GridStep100);
       this.scene.add(GridStep500);
 
-      // eslint-disable-next-line
       this.renderer = new THREE.WebGLRenderer();
-      // eslint-disable-next-line
-      this.renderer.setClearColor(new THREE.Color(0xEEEEEE));
+      this.renderer.setClearColor(new THREE.Color(0xeeeeee));
       this.renderer.setSize(containerOffsetWidth, containerOffsetHeight);
-
       this.$refs.container.append(this.renderer.domElement);
       this.renderScene();
     },
@@ -80,5 +140,6 @@ export default {
 <style type="text/css" lang="less">
 .page-home {
   height: 100%;
+  overflow: hidden;
 }
 </style>

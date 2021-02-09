@@ -22,5 +22,8 @@ module.exports = {
         symbolId: "icon-[name]"
       })
       .end();
+    config.externals({
+      three: "THREE"
+    });
   }
 };
