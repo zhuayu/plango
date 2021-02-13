@@ -11,10 +11,6 @@ export default {
     this.main = new Main({
       el: this.$refs.container
     });
-    this.main.render();
-  },
-  beforeDestroy() {
-    this.main.unbind();
   },
   methods: {}
 };

@@ -6,6 +6,7 @@ class Main {
   constructor(props) {
     this.el = props.el;
     this.init();
+    this.render();
   }
 
   init() {

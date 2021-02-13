@@ -1,6 +1,7 @@
 import * as THREE from "three";
 // import sceneConf from "../confs/scene-conf";
 import camera from "./camera";
+import GirdLine from "../objects/GirdLine.js";
 
 class Scene {
   constructor() {
@@ -15,28 +16,8 @@ class Scene {
     const containerOffsetWidth = el.offsetWidth;
     const containerOffsetHeight = el.offsetHeight;
 
-    function getGridOn2D(step, iLayer) {
-      let geometry = new THREE.Geometry();
-      for (let i = -4000; i <= 4000; i += step) {
-        geometry.vertices.push(
-          new THREE.Vector3(-4000, i, iLayer),
-          new THREE.Vector3(4000, i, iLayer)
-        );
-        geometry.vertices.push(
-          new THREE.Vector3(i, -4000, iLayer),
-          new THREE.Vector3(i, 4000, iLayer)
-        );
-      }
-      return new THREE.LineSegments(
-        geometry,
-        new THREE.LineBasicMaterial({ color: 0xd0d0d0, opacity: 1 })
-      );
-    }
-
-    const GridStep100 = getGridOn2D(100, -2);
-    const GridStep500 = getGridOn2D(500, -1);
-    this.instance.add(GridStep100);
-    this.instance.add(GridStep500);
+    const girdLine100 = new GirdLine(4000, 100, -1, 0xd0d0d0);
+    this.instance.add(girdLine100);
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setClearColor(new THREE.Color(0xeeeeee));
@@ -52,7 +33,6 @@ class Scene {
   resize() {
     const containerOffsetWidth = this.el.offsetWidth;
     const containerOffsetHeight = this.el.offsetHeight;
-    console.log(containerOffsetWidth, containerOffsetHeight);
     this.camera.aspect = containerOffsetWidth / containerOffsetHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(containerOffsetWidth, containerOffsetHeight);
